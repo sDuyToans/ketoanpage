@@ -1,0 +1,5 @@
+export const AUTH_ACTIONS_TYPES = {
+    LOGIN: 'auth/LOGIN',
+    SET_ISLOGIN: 'auth/SET_ISLOGIN',
+    UPDATE_ERROR_LOGIN: 'auth/UPDATE_ERROR_LOGIN',
+}

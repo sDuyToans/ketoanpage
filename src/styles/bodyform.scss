@@ -1,0 +1,7 @@
+.ant-form-item-row{
+    display: flex;
+    flex-direction: column !important;
+    .ant-form-item-label{
+        text-align: left !important;
+    }
+}
