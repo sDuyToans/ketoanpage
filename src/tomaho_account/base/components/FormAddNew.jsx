@@ -375,9 +375,28 @@ const FormAddNew = () => {
     const willUpdate = useSelector(selectWillUpdate);
     const dataBanHang = useSelector(selectDataBanHang);
     const [handleErrorLine, setHandleErrorLine] = useState()
+    console.log(formValues)
     const handleFinish = () => {
         // console.log(formValues.chitietphatsinh)
         // if ()
+        console.log(dataEditRender)
+        console.log(formValues);
+        setHandleErrorLine('');
+        if(moment(formValues.ngaychungtu).isAfter(formValues.ngayhachtoan)){
+            console.log(formValues.ngaychungtu)
+            console.log(formValues.ngayhachtoan)
+            setHandleErrorLine('Ngày chứng từ hơn ngày hạch toán');
+            setModal(true);
+            return null;
+        } else if(formValues.khachhang === ''){
+            setHandleErrorLine('Thiếu liên hệ!');
+            setModal(true);
+            return null;
+        } else if (formValues.diengiai === ''){
+            setHandleErrorLine('Thiếu diễn giải!');
+            setModal(true);
+            return null;
+        }
         for (let i = 0; i < arrNewLine.length; i++) {
             if (arrNewLine[i].masanpham === '' || arrNewLine[i].sanpham === '' || arrNewLine[i].dongia === '' || arrNewLine[i].sl === '' || arrNewLine[i].dvt === '' || arrNewLine[i].thanhtien === '' || arrNewLine[i].tkNo === '' || arrNewLine[i].tkCo === '' || arrNewLine[i].kho === '') {
                 if (arrNewLine[i].masanpham === '') {
@@ -678,19 +697,20 @@ const FormAddNew = () => {
                             <Row gutter={10}>
                                 <Col span={12}>
                                     <Form.Item label="Ngày chứng từ (*)" name={'ngaychungtu'}>
-                                        <DatePicker name='ngaychungtu' value={isEdit ? dataEditRender.ngaychungtu : ''} disabled={isCreate && !isEdit || onDisabled ? true : false} id='ngaychungtu' format={'DD/MM/YYYY'} defaultValue={moment()} style={{ width: '100%' }} onChange={(e) => { setFormValues({ ...formValues, ngaychungtu: e.format('L') }); }} />
+                                        <DatePicker name='ngaychungtu' value={isEdit ? dataEditRender.ngaychungtu : ''} disabled={isCreate && !isEdit || onDisabled ? true : false} id='ngaychungtu' format={'DD/MM/YYYY'} defaultValue={moment()} style={{ width: '100%' }} onChange={(e) => { setFormValues({ ...formValues, ngaychungtu: e.format('L') }); console.log(formValues)}} />
 
                                     </Form.Item>
                                 </Col>
                                 <Col span={12}>
                                     <Form.Item label="Ngày hoạch toán (*)" name={'ngayhoachtoan'}>
-                                        <DatePicker name='ngayhoachtoan' value={isEdit ? dataEditRender.ngayhachtoan : ''} disabled={isCreate && !isEdit || onDisabled ? true : false} id='ngayhoactoan' format={'DD/MM/YYYY'} defaultValue={moment()} style={{ width: '100%' }} onChange={(e) => { setFormValues({ ...formValues, ngaychungtu: e.format('L') }) }} />
+                                        <DatePicker name='ngayhoachtoan' value={isEdit ? dataEditRender.ngayhachtoan : ''} disabled={isCreate && !isEdit || onDisabled ? true : false} id='ngayhoactoan' format={'DD/MM/YYYY'} defaultValue={moment()} style={{ width: '100%' }} onChange={(e) => { setFormValues({ ...formValues, ngayhachtoan: e.format('L') }); console.log(formValues)}} />
                                     </Form.Item>
                                 </Col>
                             </Row>
                         </Col>
                         <Col span={8}>
-                            <Form.Item disabled={isCreate && !isEdit || onDisabled ? true : false} label="Khách hàng (*)" name={'khachhang'} rules={[{ required: true, message: 'Thiếu liên hệ' }]}>
+                            <Form.Item disabled={isCreate && !isEdit || onDisabled ? true : false} label="Khách hàng (*)" name={'khachhang'} >
+                                {/* rules={[{ required: true, message: 'Thiếu liên hệ' }]}  */}
                                 <Select
                                     showSearch
                                     style={{
@@ -722,7 +742,8 @@ const FormAddNew = () => {
                             </Row>
                         </Col>
                     </Row>
-                    <Form.Item label="Diễn giải (*)" name={'diengiai'} rules={[{ required: true, message: 'Thiếu diễn giải' }]}>
+                    <Form.Item label="Diễn giải (*)" name={'diengiai'}>
+                        {/* rules={[{ required: true, message: 'Thiếu diễn giải' }]} */}
                         <Input.TextArea name='diengiai' value={isEdit && !isEdit ? dataEditRender.diengiai : ''} disabled={isCreate || onDisabled ? true : false} onChange={(e) => {
                             setFormValues({ ...formValues, diengiai: e.target.value })
                             // setValueProps({...valueprops, [e.target.name]: e.target.value});
