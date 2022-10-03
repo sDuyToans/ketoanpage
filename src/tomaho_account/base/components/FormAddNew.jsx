@@ -498,7 +498,7 @@ const FormAddNew = () => {
                 sohoadon: dataEditRender.sohoadon,
                 kituhoadon: dataEditRender.kituhoadon,
                 ngaychungtu: moment(dataEditRender.ngaychungtu),
-                ngayhachtoan: moment(dataEditRender.ngayhachtoan),
+                ngayhoachtoan: moment(dataEditRender.ngayhachtoan),
                 khachhang: dataEditRender.khachhang,
                 loaitien: dataEditRender.loaitien,
                 tigia: dataEditRender.tigia,
@@ -544,9 +544,74 @@ const FormAddNew = () => {
     }
     const handleSave = () => {
         console.log(formValues)
-        if (formValues.diengiai === '', formValues.khachhang === '') {
-            setModal(true)
-        } else {
+        setHandleErrorLine('');
+        if(moment(formValues.ngaychungtu).isAfter(formValues.ngayhachtoan)){
+            console.log(formValues.ngaychungtu)
+            console.log(formValues.ngayhachtoan)
+            setHandleErrorLine('Ngày chứng từ hơn ngày hạch toán');
+            setModal(true);
+            return null;
+        } else if(formValues.khachhang === ''){
+            setHandleErrorLine('Thiếu liên hệ!');
+            setModal(true);
+            return null;
+        } else if (formValues.diengiai === ''){
+            setHandleErrorLine('Thiếu diễn giải!');
+            setModal(true);
+            return null;
+        }
+        for (let i = 0; i < arrNewLine.length; i++) {
+            if (arrNewLine[i].masanpham === '' || arrNewLine[i].sanpham === '' || arrNewLine[i].dongia === '' || arrNewLine[i].sl === '' || arrNewLine[i].dvt === '' || arrNewLine[i].thanhtien === '' || arrNewLine[i].tkNo === '' || arrNewLine[i].tkCo === '' || arrNewLine[i].kho === '') {
+                if (arrNewLine[i].masanpham === '') {
+                    console.log('Thiếu mã sản phẩm')
+                    setHandleErrorLine('Thiếu mã sản phẩm')
+                    setModal(true)
+                    return null
+                }
+                else if (arrNewLine[i].sanpham === '') {
+                    console.log('Thiếu sản phẩm')
+                    setHandleErrorLine('Thiếu sản phẩm')
+                    setModal(true)
+                    return null
+                }
+                else if (arrNewLine[i].dongia === '') {
+                    console.log('Thiếu đơn giá')
+                    setHandleErrorLine('Thiếu đơn giá')
+                    setModal(true)
+                    return null
+                }
+                else if (arrNewLine[i].sl === '') {
+                    console.log('Thiếu số lượng')
+                    setHandleErrorLine('Thiếu số lượng')
+                    setModal(true)
+                    return null
+                }
+                else if (arrNewLine[i].dvt === '') {
+                    console.log('Thiếu đơn vị tính')
+                    setHandleErrorLine('Thiếu đơn vị tính')
+                    setModal(true)
+                    return null
+                }
+                else if (arrNewLine[i].tkNo === '') {
+                    console.log('Thiếu TK Nợ')
+                    setHandleErrorLine('Thiếu TK Nợ')
+                    setModal(true)
+                    return null
+                }
+                else if (arrNewLine[i].tkCo === '') {
+                    console.log('Thiếu TK Có')
+                    setHandleErrorLine('Thiếu TK Có')
+                    setModal(true)
+                    return null
+                }
+                else if (arrNewLine[i].kho === '') {
+                    console.log('Thiếu Kho')
+                    setHandleErrorLine('Thiếu Kho')
+                    setModal(true)
+                    return null
+                }
+            }
+        }
             for (let i = 0; i < arrNewLine.length; i++) {
                 if (arrNewLine[i].masanpham === '' || arrNewLine[i].sanpham === '' || arrNewLine[i].dongia === '' || arrNewLine[i].sl === '' || arrNewLine[i].dvt === '' || arrNewLine[i].thanhtien === '' || arrNewLine[i].tkNo === '' || arrNewLine[i].tkCo === '' || arrNewLine[i].kho === '') {
                     if (arrNewLine[i].masanpham === '') {
@@ -598,7 +663,7 @@ const FormAddNew = () => {
                         return null
                     }
                 }
-            }
+            
             dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_IS_CREATE, payload: true });
             dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_IS_EDIT, payload: false });
             dispatch({ type: ACCOUNT_ACTION_TYPES.UPDATE_IS_ADDNEW, payload: true });
