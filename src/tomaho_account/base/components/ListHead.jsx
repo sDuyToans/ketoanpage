@@ -20,6 +20,7 @@ const arrOptions = [
 ]
 
 const ListHead = ({ formValues, arrNewLine, setSave, setKichHoatChungTu }) => {
+    const idEdit = useSelector(selectIdEdit);
     const [form] = Form.useForm();
     const dataDefault = useSelector(selectDataBanHang);
     const idUpdate = useSelector(selectIdEdit);
@@ -68,6 +69,7 @@ const ListHead = ({ formValues, arrNewLine, setSave, setKichHoatChungTu }) => {
         dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_IS_EDIT, payload: true });
         dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_ONDISABLED, payload: false })
         dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_IS_SAVE, payload: true });
+        dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_ID_EDIT, payload: formValues.sochungtu})
         setSave(true)
         // dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_KHCT, payload: false})
         // dispatch({
