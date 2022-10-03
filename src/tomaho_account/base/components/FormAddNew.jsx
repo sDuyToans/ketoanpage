@@ -16,10 +16,11 @@ import FieldSelect from "./FieldSelect";
 import FieldChar from "./FieldChar";
 import FieldSearch from './FieldSearch';
 import FieldNumber from './FieldNumber';
-import { selectFormBanHang, selectIsEdit, selectIsCreate, selectIsUpdate, selectDataBanHang, selectIdEdit, selectWillUpdate, selectKHCT, selectDisabled } from '../models/banhangreducer/banhang.selector';
+import { selectFormBanHang, selectIsEdit, selectIsCreate, selectIsUpdate, selectDataBanHang, selectIdEdit, selectWillUpdate, selectKHCT, selectDisabled, selectIsReload, selectIsActiveNewTrangThai } from '../models/banhangreducer/banhang.selector';
 import { BANHANG_ACTION_TYPES } from '../controllers/banhang.types';
 import ListHead from './ListHead';
 import { ACCOUNT_ACTION_TYPES } from '../controllers/account.types';
+
 const FormAddNew = () => {
 
     const { Option } = Select;
@@ -115,6 +116,7 @@ const FormAddNew = () => {
             title: '#',
             dataIndex: '_id',
             fixed: 'left',
+            width: 20,
             render: (_, record) => {
                 return <FieldChar disabled={true} value={record._id} />
             }
@@ -123,6 +125,7 @@ const FormAddNew = () => {
             title: 'Mã sản phẩm',
             dataIndex: 'masanpham',
             key: 'masanpham',
+            width: 25,
             render: (_, record) => {
                 return <Select defaultValue={record.masanpham} disabled={isCreate || onDisabled ? true : false} style={{ width: '100%' }} onChange={(e) => {
                     record.masanpham = e;
@@ -135,6 +138,7 @@ const FormAddNew = () => {
             title: 'Sản phẩm',
             dataIndex: 'sanpham',
             key: 'sanpham',
+            width: 20,
             render: (_, record) => {
                 return <FieldChar defaultValue={record.sanpham} disabled={isCreate || onDisabled ? true : false} style={{ width: '100%' }} id={record._id} onChange={(e) => {
                     record.sanpham = e.target.value;
@@ -145,6 +149,7 @@ const FormAddNew = () => {
             title: 'Đơn giá',
             dataIndex: 'dongia',
             key: 'dongia',
+            width: 20,
             render: (_, record) => {
                 return <FieldNumber defaultValue={record.dongia} disabled={isCreate || onDisabled ? true : false} style={{ width: '100%' }} onChange={(e) => {
                     record.dongia = e;
@@ -156,6 +161,7 @@ const FormAddNew = () => {
             title: 'SL',
             dataIndex: 'sl',
             key: 'sl',
+            width: 10,
             render: (_, record) => {
                 return <FieldNumber defaultValue={record.sl} disabled={isCreate || onDisabled ? true : false} style={{ width: '100%' }} onChange={(e) => {
                     record.sl = e;
@@ -167,6 +173,7 @@ const FormAddNew = () => {
             title: 'ĐVT',
             dataIndex: 'dvt',
             key: 'dvt',
+            width: 15,
             render: (_, record) => {
                 return <Select defaultValue={record.dvt} disabled={isCreate || onDisabled ? true : false} style={{ width: '100%' }} onChange={(e) => {
                     record.dvt = e;
@@ -179,6 +186,7 @@ const FormAddNew = () => {
             title: 'Thành tiền',
             dataIndex: 'thanhtien',
             key: 'thanhtien',
+            width: 17,
             render: (_, record) => {
                 return <FieldChar style={{ width: '100%' }} disabled={true} value={record.thanhtien} id={record._id} />
             }
@@ -187,6 +195,7 @@ const FormAddNew = () => {
             title: 'TK nợ',
             dataIndex: 'tkNo',
             key: 'tkNo',
+            width: 15,
             render: (_, record) => {
                 return <Select defaultValue={record.tkNo} disabled={isCreate || onDisabled ? true : false} style={{ width: '100%' }} onChange={(e) => {
                     record.tkNo = e;
@@ -199,6 +208,7 @@ const FormAddNew = () => {
             title: 'Tk có',
             dataIndex: 'tkCo',
             key: 'tkCo',
+            width: 15,
             render: (_, record) => {
                 return <Select defaultValue={record.tkCo} disabled={isCreate || onDisabled ? true : false} style={{ width: '100%' }} onChange={(e) => {
                     record.tkCo = e;
@@ -210,6 +220,7 @@ const FormAddNew = () => {
         {
             title: 'Kho',
             dataIndex: 'kho',
+            width: 20,
             render: (_, record) => {
                 return <Select defaultValue={record.kho} disabled={isCreate || onDisabled ? true : false} style={{ width: '100%' }} onChange={(e) => {
                     record.kho = e;
@@ -222,6 +233,7 @@ const FormAddNew = () => {
             title: 'Khoản mục',
             dataIndex: 'khoanmuc',
             key: 'khoanmuc',
+            width: 50,
             render: (_, record) => {
                 return <Select defaultValue={record.khoanmuc} disabled={isCreate || onDisabled ? true : false} style={{ width: '100%' }} onChange={(e) => {
                     record.khoanmuc = e;
@@ -382,17 +394,17 @@ const FormAddNew = () => {
         console.log(dataEditRender)
         console.log(formValues);
         setHandleErrorLine('');
-        if(moment(formValues.ngaychungtu).isAfter(formValues.ngayhachtoan)){
+        if (moment(formValues.ngaychungtu).isAfter(formValues.ngayhachtoan)) {
             console.log(formValues.ngaychungtu)
             console.log(formValues.ngayhachtoan)
             setHandleErrorLine('Ngày chứng từ hơn ngày hạch toán');
             setModal(true);
             return null;
-        } else if(formValues.khachhang === ''){
+        } else if (formValues.khachhang === '') {
             setHandleErrorLine('Thiếu liên hệ!');
             setModal(true);
             return null;
-        } else if (formValues.diengiai === ''){
+        } else if (formValues.diengiai === '') {
             setHandleErrorLine('Thiếu diễn giải!');
             setModal(true);
             return null;
@@ -467,28 +479,12 @@ const FormAddNew = () => {
                 payload: formValues
             })
         }
+        dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_ONDISABLED, payload: true })
+        setSave(false);
     }
-    // dispatch({
-    //     type: BANHANG_ACTION_TYPES.UPDATE_IS_UPDATE,
-    //     payload: true
-    // })
-    // dispatch({
-    //     type: BANHANG_ACTION_TYPES.UPDATE_FORM_BANHANG,
-    //     payload: formValues
-    // })
-    // dispatch({
-    //     type: BANHANG_ACTION_TYPES.UPDATE_IS_CREATE,
-    //     payload: true
-    // })
-    // if (isCreate && !isEdit && isAdNew) {
-    //     dispatch({
-    //         type: BANHANG_ACTION_TYPES.UPDATE_FORM_BANHANG,
-    //         payload: formValues
-    //     })
-    // }
-
+    const [isSave, setIsSave] = useState(false)
     const [dataEditRender, setDataEditRender] = useState([]);
-    console.log(dataEditRender)
+    // console.log(dataEditRender)
     const idUpdate = useSelector(selectIdEdit);
     useEffect(() => {
         if (isEdit && dataEditRender && idUpdate) {
@@ -541,21 +537,25 @@ const FormAddNew = () => {
     const [kichHoatChungTu, setKichHoatChungTu] = useState(false);
     const handleKichHoatChungTu = () => {
         setKichHoatChungTu(false);
+        dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_CHUA_GHISO, payload: formValues.sochungtu })
+        dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_KHCT, payload: true });
+        dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_IS_CREATE, payload: true });
+        activeTrangThai( formValues.sochungtu )
     }
     const handleSave = () => {
         console.log(formValues)
         setHandleErrorLine('');
-        if(moment(formValues.ngaychungtu).isAfter(formValues.ngayhachtoan)){
+        if (moment(formValues.ngaychungtu).isAfter(formValues.ngayhachtoan)) {
             console.log(formValues.ngaychungtu)
             console.log(formValues.ngayhachtoan)
             setHandleErrorLine('Ngày chứng từ hơn ngày hạch toán');
             setModal(true);
             return null;
-        } else if(formValues.khachhang === ''){
+        } else if (formValues.khachhang === '') {
             setHandleErrorLine('Thiếu liên hệ!');
             setModal(true);
             return null;
-        } else if (formValues.diengiai === ''){
+        } else if (formValues.diengiai === '') {
             setHandleErrorLine('Thiếu diễn giải!');
             setModal(true);
             return null;
@@ -612,58 +612,57 @@ const FormAddNew = () => {
                 }
             }
         }
-            for (let i = 0; i < arrNewLine.length; i++) {
-                if (arrNewLine[i].masanpham === '' || arrNewLine[i].sanpham === '' || arrNewLine[i].dongia === '' || arrNewLine[i].sl === '' || arrNewLine[i].dvt === '' || arrNewLine[i].thanhtien === '' || arrNewLine[i].tkNo === '' || arrNewLine[i].tkCo === '' || arrNewLine[i].kho === '') {
-                    if (arrNewLine[i].masanpham === '') {
-                        console.log('Thiếu mã sản phẩm')
-                        setHandleErrorLine('Thiếu mã sản phẩm')
-                        setModal(true)
-                        return null
-                    }
-                    else if (arrNewLine[i].sanpham === '') {
-                        console.log('Thiếu sản phẩm')
-                        setHandleErrorLine('Thiếu sản phẩm')
-                        setModal(true)
-                        return null
-                    }
-                    else if (arrNewLine[i].dongia === '') {
-                        console.log('Thiếu đơn giá')
-                        setHandleErrorLine('Thiếu đơn giá')
-                        setModal(true)
-                        return null
-                    }
-                    else if (arrNewLine[i].sl === '') {
-                        console.log('Thiếu số lượng')
-                        setHandleErrorLine('Thiếu số lượng')
-                        setModal(true)
-                        return null
-                    }
-                    else if (arrNewLine[i].dvt === '') {
-                        console.log('Thiếu đơn vị tính')
-                        setHandleErrorLine('Thiếu đơn vị tính')
-                        setModal(true)
-                        return null
-                    }
-                    else if (arrNewLine[i].tkNo === '') {
-                        console.log('Thiếu TK Nợ')
-                        setHandleErrorLine('Thiếu TK Nợ')
-                        setModal(true)
-                        return null
-                    }
-                    else if (arrNewLine[i].tkCo === '') {
-                        console.log('Thiếu TK Có')
-                        setHandleErrorLine('Thiếu TK Có')
-                        setModal(true)
-                        return null
-                    }
-                    else if (arrNewLine[i].kho === '') {
-                        console.log('Thiếu Kho')
-                        setHandleErrorLine('Thiếu Kho')
-                        setModal(true)
-                        return null
-                    }
+        for (let i = 0; i < arrNewLine.length; i++) {
+            if (arrNewLine[i].masanpham === '' || arrNewLine[i].sanpham === '' || arrNewLine[i].dongia === '' || arrNewLine[i].sl === '' || arrNewLine[i].dvt === '' || arrNewLine[i].thanhtien === '' || arrNewLine[i].tkNo === '' || arrNewLine[i].tkCo === '' || arrNewLine[i].kho === '') {
+                if (arrNewLine[i].masanpham === '') {
+                    console.log('Thiếu mã sản phẩm')
+                    setHandleErrorLine('Thiếu mã sản phẩm')
+                    setModal(true)
+                    return null
                 }
-            
+                else if (arrNewLine[i].sanpham === '') {
+                    console.log('Thiếu sản phẩm')
+                    setHandleErrorLine('Thiếu sản phẩm')
+                    setModal(true)
+                    return null
+                }
+                else if (arrNewLine[i].dongia === '') {
+                    console.log('Thiếu đơn giá')
+                    setHandleErrorLine('Thiếu đơn giá')
+                    setModal(true)
+                    return null
+                }
+                else if (arrNewLine[i].sl === '') {
+                    console.log('Thiếu số lượng')
+                    setHandleErrorLine('Thiếu số lượng')
+                    setModal(true)
+                    return null
+                }
+                else if (arrNewLine[i].dvt === '') {
+                    console.log('Thiếu đơn vị tính')
+                    setHandleErrorLine('Thiếu đơn vị tính')
+                    setModal(true)
+                    return null
+                }
+                else if (arrNewLine[i].tkNo === '') {
+                    console.log('Thiếu TK Nợ')
+                    setHandleErrorLine('Thiếu TK Nợ')
+                    setModal(true)
+                    return null
+                }
+                else if (arrNewLine[i].tkCo === '') {
+                    console.log('Thiếu TK Có')
+                    setHandleErrorLine('Thiếu TK Có')
+                    setModal(true)
+                    return null
+                }
+                else if (arrNewLine[i].kho === '') {
+                    console.log('Thiếu Kho')
+                    setHandleErrorLine('Thiếu Kho')
+                    setModal(true)
+                    return null
+                }
+            }
             dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_IS_CREATE, payload: true });
             dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_IS_EDIT, payload: false });
             dispatch({ type: ACCOUNT_ACTION_TYPES.UPDATE_IS_ADDNEW, payload: true });
@@ -671,13 +670,39 @@ const FormAddNew = () => {
             dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_FORM_BANHANG_EDIT, payload: formValues })
             dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_FORM_BANHANG_CTPS_EDIT, payload: { newArr: arrNewLine, id: idUpdate } })
             dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_SEARCHKEY, payload: '' });
+            // console.log(123)
             setSave(false)
+            setIsSave(true)
             // console.log(formValues.diengiai)
         }
     }
     const handleHuy = () => {
         setSave(false)
         dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_ONDISABLED, payload: true })
+    }
+    // console.log(save)
+    // console.log(onDisabled)
+    // console.log(kichHoatChungTu)
+    const activeTrangThai = (id) => {
+        const activeData = dataBanHang.find(item => item.sochungtu === id);
+        console.log(activeData.trangthai)
+        switch (activeData.trangthai) {
+            case 'Ghi sổ':
+                document.querySelector('.ghi-so').classList.add('active');
+                document.querySelector('.chua-ghi-so').classList.remove('active');
+                document.querySelector('.huy-chung-tu').classList.remove('active');
+                break;
+            case 'Chưa ghi sổ':
+                document.querySelector('.chua-ghi-so').classList.add('active');
+                document.querySelector('.ghi-so').classList.remove('active');
+                document.querySelector('.huy-chung-tu').classList.remove('active');
+                break;
+            case 'Huỷ chứng từ':
+                document.querySelector('.huy-chung-tu').classList.add('active');
+                document.querySelector('.ghi-so').classList.remove('active');
+                document.querySelector('.chua-ghi-so').classList.remove('active');
+                break;
+        }
     }
     return (
         <div className="formadd-new" style={{ padding: '5px' }}>
@@ -692,10 +717,10 @@ const FormAddNew = () => {
                 >
                     {
                         errorList?.map((item, index) => {
-                                return (
-                                    <p key={index}>{item.errors}</p>
-                                )
-                            })
+                            return (
+                                <p key={index}>{item.errors}</p>
+                            )
+                        })
                     }
                     {
                         <p>{handleErrorLine}</p>
@@ -703,23 +728,31 @@ const FormAddNew = () => {
                 </Modal>
                 <Form onFinish={handleFinish} form={form} onFinishFailed={handleFinishFailed} >
                     {/* <ListHead formValues={formValues} arrNewLine={arrNewLine} setSave={setSave}/> */}
-                    {   
+                    {
                         kichHoatChungTu
-                            ? <Button onClick={handleKichHoatChungTu}><CloseOutlined />Kích hoạt chứng từ</Button>
+                            ?
+                            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', paddingTop: '5px'}}>
+                                <Button onClick={() => handleKichHoatChungTu(formValues.sochungtu)}><CloseOutlined />Kích hoạt chứng từ</Button>
+                                <ul style={{ display: 'flex', gap: '5px', listStyle: 'none' }}>
+                                    <li className='chua-ghi-so' style={{ padding: '5px 15px' }}>Chưa ghi sổ</li>
+                                    <li className='ghi-so' style={{ padding: '5px 15px' }}>Ghi sổ</li>
+                                    <li className='huy-chung-tu active' style={{ padding: '5px 15px' }}>Huỷ chứng từ</li>
+                                </ul>
+                            </div>
                             :
                             !save
                                 ?
-                                <ListHead formValues={formValues} arrNewLine={arrNewLine} setSave={setSave} setKichHoatChungTu={setKichHoatChungTu} />
-                                : <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                                <ListHead activeTrangThai={activeTrangThai} formValues={formValues} arrNewLine={arrNewLine} setSave={setSave} setKichHoatChungTu={setKichHoatChungTu} />
+                                : <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', padding: '5px'}}>
                                     <div className="button-together" style={{ display: 'flex', gap: '10px' }}>
                                         <Button htmlType="submit" onClick={handleSave} style={{ backgroundColor: '#c43e1b' }}><SaveOutlined />Lưu</Button>
                                         <Button onClick={handleHuy}><CloseOutlined />Huỷ</Button>
                                     </div>
                                     <div className="right-listhead">
                                         <ul style={{ display: 'flex', gap: '5px', listStyle: 'none' }}>
-                                            <li style={{ background: '#8c0c0c', padding: '5px 15px' }}>Chưa ghi sổ</li>
-                                            <li style={{ background: '#8c0c0c', padding: '5px 15px' }}>Ghi sổ</li>
-                                            <li style={{ background: '#8c0c0c', padding: '5px 15px' }}>Huỷ chứng từ</li>
+                                            <li className='chua-ghi-so active' style={{  padding: '5px 15px' }}>Chưa ghi sổ</li>
+                                            <li className='ghi-so' style={{  padding: '5px 15px' }}>Ghi sổ</li>
+                                            <li className='huy-chung-tu' style={{  padding: '5px 15px' }}>Huỷ chứng từ</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -727,12 +760,12 @@ const FormAddNew = () => {
                     <Row gutter={10} className='first-row'>
                         <Col span={8}>
                             <Form.Item label="Số chứng từ" name={'sochungtu'} >
-                                <FieldChar  disabled='true' />
+                                <FieldChar disabled='true' />
                             </Form.Item>
                         </Col>
                         <Col span={8}>
                             <Form.Item label="Số hoá đơn" name={'sohoadon'} >
-                                <FieldChar name='sohoadon'  disabled={isCreate && !isEdit || onDisabled ? true : false} onChange={(e) => {
+                                <FieldChar name='sohoadon' disabled={isCreate && !isEdit || onDisabled ? true : false} onChange={(e) => {
                                     setFormValues({ ...formValues, sohoadon: e.target.value })
                                     // setValueProps({...valueprops, [e.target.name]: e.target.value});
                                 }} />
@@ -752,7 +785,7 @@ const FormAddNew = () => {
                         </Col>
                         <Col span={8}>
                             <Form.Item label="Kí tự hoá đơn" name={'kituhoadon'}>
-                                <FieldChar name='kituhoadon'  disabled={isCreate && !isEdit || onDisabled ? true : false} onChange={(e) => {
+                                <FieldChar name='kituhoadon' disabled={isCreate && !isEdit || onDisabled ? true : false} onChange={(e) => {
                                     setFormValues({ ...formValues, kituhoadon: e.target.value })
                                     // setValueProps({...valueprops, [e.target.name]: e.target.value});
                                 }} />
@@ -764,13 +797,13 @@ const FormAddNew = () => {
                             <Row gutter={10}>
                                 <Col span={12}>
                                     <Form.Item label="Ngày chứng từ (*)" name={'ngaychungtu'}>
-                                        <DatePicker name='ngaychungtu'  disabled={isCreate && !isEdit || onDisabled ? true : false} id='ngaychungtu' format={'DD/MM/YYYY'} defaultValue={moment()} style={{ width: '100%' }} onChange={(e) => { setFormValues({ ...formValues, ngaychungtu: e.format('L') }); console.log(formValues)}} />
+                                        <DatePicker name='ngaychungtu' disabled={isCreate && !isEdit || onDisabled ? true : false} id='ngaychungtu' format={'DD/MM/YYYY'} defaultValue={moment()} style={{ width: '100%' }} onChange={(e) => { setFormValues({ ...formValues, ngaychungtu: e.format('L') }); console.log(formValues) }} />
 
                                     </Form.Item>
                                 </Col>
                                 <Col span={12}>
                                     <Form.Item label="Ngày hoạch toán (*)" name={'ngayhoachtoan'}>
-                                        <DatePicker name='ngayhoachtoan'  disabled={isCreate && !isEdit || onDisabled ? true : false} id='ngayhoactoan' format={'DD/MM/YYYY'} defaultValue={moment()} style={{ width: '100%' }} onChange={(e) => { setFormValues({ ...formValues, ngayhachtoan: e.format('L') }); console.log(formValues)}} />
+                                        <DatePicker name='ngayhoachtoan' disabled={isCreate && !isEdit || onDisabled ? true : false} id='ngayhoactoan' format={'DD/MM/YYYY'} defaultValue={moment()} style={{ width: '100%' }} onChange={(e) => { setFormValues({ ...formValues, ngayhachtoan: e.format('L') }); console.log(formValues) }} />
                                     </Form.Item>
                                 </Col>
                             </Row>

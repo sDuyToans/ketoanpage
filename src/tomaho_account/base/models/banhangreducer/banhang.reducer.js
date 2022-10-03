@@ -71,7 +71,8 @@ const initialState = {
     kichhoatCT: false,
     onDisabled: false,
     isSave: false,
-    error: null
+    error: null,
+    isActiveNewTrangThai: false
 }
 
 export const banHangReducer = ( state = initialState, action = {} ) => {

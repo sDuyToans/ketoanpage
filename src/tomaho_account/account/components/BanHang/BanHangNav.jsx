@@ -40,6 +40,7 @@ const BanHangNav = () => {
         dispatch({type: BANHANG_ACTION_TYPES.UPDATE_IS_SEARCH, payload: true});
         dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_KHCT, payload: false})
         dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_ONDISABLED, payload: false})
+        dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_ID_EDIT, payload: null})
     };
     return (
         <>

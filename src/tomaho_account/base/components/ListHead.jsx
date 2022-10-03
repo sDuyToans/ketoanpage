@@ -19,7 +19,7 @@ const arrOptions = [
     { id: 4, value: 'Huỷ chứng từ' }
 ]
 
-const ListHead = ({ formValues, arrNewLine, setSave, setKichHoatChungTu }) => {
+const ListHead = ({ formValues, arrNewLine, setSave, setKichHoatChungTu, activeTrangThai }) => {
     const idEdit = useSelector(selectIdEdit);
     const [form] = Form.useForm();
     const dataDefault = useSelector(selectDataBanHang);
@@ -32,6 +32,8 @@ const ListHead = ({ formValues, arrNewLine, setSave, setKichHoatChungTu }) => {
     const hanldeAddNew = () => {
         dispatch({ type: ACCOUNT_ACTION_TYPES.UPDATE_IS_ADDNEW, payload: !addNew })
         dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_IS_CREATE, payload: false })
+        // console.log('123')
+        setSave(true)
     }
     const resetField = () => {
         form.resetFields();
@@ -69,7 +71,7 @@ const ListHead = ({ formValues, arrNewLine, setSave, setKichHoatChungTu }) => {
         dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_IS_EDIT, payload: true });
         dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_ONDISABLED, payload: false })
         dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_IS_SAVE, payload: true });
-        dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_ID_EDIT, payload: formValues.sochungtu})
+        dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_ID_EDIT, payload: formValues.sochungtu })
         setSave(true)
         // dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_KHCT, payload: false})
         // dispatch({
@@ -86,13 +88,14 @@ const ListHead = ({ formValues, arrNewLine, setSave, setKichHoatChungTu }) => {
     //     dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_FORM_BANHANG_CTPS_EDIT, payload: { newArr: arrNewLine, id: idUpdate } })
     //     dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_SEARCHKEY, payload: '' });
     // }
+    const [ghiSo, setGhiSo] = useState(false);
     const handleGhiSo = () => {
-        
-            dispatch({
-                type: BANHANG_ACTION_TYPES.UPDATE_GHI_SO,
-                payload: formValues.sochungtu
-            })
-        
+        dispatch({
+            type: BANHANG_ACTION_TYPES.UPDATE_GHI_SO,
+            payload: formValues.sochungtu
+        })
+        setGhiSo(true);
+        activeTrangThai(formValues.sochungtu)
     }
     const handleHuyCT = () => {
         setKichHoatChungTu(true);
@@ -107,20 +110,25 @@ const ListHead = ({ formValues, arrNewLine, setSave, setKichHoatChungTu }) => {
                 payload: dataDefault[dataDefault.length - 1].sochungtu
             })
         }
+        activeTrangThai(formValues.sochungtu);
     }
     const KHCT = useSelector(selectKHCT);
     // console.log(KHCT)
     const handleKichHoatChungTu = (id) => {
         // console.log(id)
-        dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_CHUA_GHISO, payload: id})
+        dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_CHUA_GHISO, payload: id })
         dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_KHCT, payload: true });
-        dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_IS_CREATE, payload: true })
+        dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_IS_CREATE, payload: true });
+        setKichHoatChungTu(false);
+        activeTrangThai(formValues.sochungtu)
     }
     const [boGhiSo, setBoGhiSo] = useState(false);
     const handleBoGhiso = (id) => {
         setBoGhiSo(true);
+        setGhiSo(false)
         setKichHoatChungTu(false);
         dispatch({ type: BANHANG_ACTION_TYPES.UPDATE_CHUA_GHISO, payload: id })
+        activeTrangThai(id)
     }
     const checkDataEditToRenderButton = (idEdit) => {
         for (const data of dataBanHang) {
@@ -130,9 +138,18 @@ const ListHead = ({ formValues, arrNewLine, setSave, setKichHoatChungTu }) => {
                     case 'Ghi sổ':
                         // console.log(data.trangthai)
                         return (
-                            <div className="button-together" style={{ display: 'flex', gap: '10px' }}>
-                                <Button style={{ backgroundColor: '#c43e1b' }} onClick={() => handleBoGhiso(data.sochungtu)}><SaveOutlined />Bỏ ghi sổ</Button>
-                                <Button disabled={true}><CloseOutlined />Xuất kho</Button>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                                <div className="button-together" style={{ display: 'flex', gap: '10px' }}>
+                                    <Button style={{ backgroundColor: '#c43e1b' }} onClick={() => handleBoGhiso(data.sochungtu)}><SaveOutlined />Bỏ ghi sổ</Button>
+                                    <Button disabled={true}><CloseOutlined />Xuất kho</Button>
+                                </div>
+                                <div className="right-listhead">
+                                    <ul style={{ display: 'flex', gap: '5px', listStyle: 'none' }}>
+                                        <li className='chua-ghi-so' style={{  padding: '5px 15px' }}>Chưa ghi sổ</li>
+                                        <li className='ghi-so active' style={{  padding: '5px 15px' }}>Ghi sổ</li>
+                                        <li className='huy-chung-tu' style={{  padding: '5px 15px' }}>Huỷ chứng từ</li>
+                                    </ul>
+                                </div>
                             </div>
                         )
                     case 'Chưa ghi sổ':
@@ -146,9 +163,9 @@ const ListHead = ({ formValues, arrNewLine, setSave, setKichHoatChungTu }) => {
                                 </div>
                                 <div className="right-listhead">
                                     <ul style={{ display: 'flex', gap: '5px', listStyle: 'none' }}>
-                                        <li style={{ background: '#8c0c0c', padding: '5px 15px' }}>Chưa ghi sổ</li>
-                                        <li style={{ background: '#8c0c0c', padding: '5px 15px' }}>Ghi sổ</li>
-                                        <li style={{ background: '#8c0c0c', padding: '5px 15px' }}>Huỷ chứng từ</li>
+                                        <li className='chua-ghi-so active' style={{  padding: '5px 15px' }}>Chưa ghi sổ</li>
+                                        <li className='ghi-so' style={{  padding: '5px 15px' }}>Ghi sổ</li>
+                                        <li className='huy-chung-tu' style={{  padding: '5px 15px' }}>Huỷ chứng từ</li>
                                     </ul>
                                 </div>
                             </div>
@@ -156,7 +173,14 @@ const ListHead = ({ formValues, arrNewLine, setSave, setKichHoatChungTu }) => {
                     case 'Huỷ chứng từ':
                         // console.log(data.trangthai)
                         return (
-                            <Button onClick={() => handleKichHoatChungTu(data.sochungtu)}><CloseOutlined />Kích hoạt chứng từ</Button>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                                <Button onClick={() => handleKichHoatChungTu(data.sochungtu)}><CloseOutlined />Kích hoạt chứng từ</Button>
+                                <ul style={{ display: 'flex', gap: '5px', listStyle: 'none' }}>
+                                    <li className='chua-ghi-so' style={{  padding: '5px 15px' }}>Chưa ghi sổ</li>
+                                    <li className='ghi-so' style={{  padding: '5px 15px' }}>Ghi sổ</li>
+                                    <li className='huy-chung-tu active' style={{  padding: '5px 15px' }}>Huỷ chứng từ</li>
+                                </ul>
+                            </div>
                         )
                     default:
                         return (
@@ -168,9 +192,9 @@ const ListHead = ({ formValues, arrNewLine, setSave, setKichHoatChungTu }) => {
                                 </div>
                                 <div className="right-listhead">
                                     <ul style={{ display: 'flex', gap: '5px', listStyle: 'none' }}>
-                                        <li style={{ background: '#8c0c0c', padding: '5px 15px' }}>Chưa ghi sổ</li>
-                                        <li style={{ background: '#8c0c0c', padding: '5px 15px' }}>Ghi sổ</li>
-                                        <li style={{ background: '#8c0c0c', padding: '5px 15px' }}>Huỷ chứng từ</li>
+                                        <li className='chua-ghi-so' style={{  padding: '5px 15px' }}>Chưa ghi sổ</li>
+                                        <li className='ghi-so' style={{  padding: '5px 15px' }}>Ghi sổ</li>
+                                        <li className='huy-chung-tu' style={{  padding: '5px 15px' }}>Huỷ chứng từ</li>
                                     </ul>
                                 </div>
                             </div>
@@ -181,30 +205,37 @@ const ListHead = ({ formValues, arrNewLine, setSave, setKichHoatChungTu }) => {
     }
     const isSave = useSelector(selectIsSave);
     const handleHuyTao = () => {
-
+        dispatch({ type: ACCOUNT_ACTION_TYPES.UPDATE_IS_ADDNEW, payload: false })
+    }
+    const [disableSearchIcon, setDisableSearchIcon] = useState(true);
+    const handleSearch = (e) => {
+        if (e.target.value !== '') {
+            setDisableSearchIcon(false);
+        }
+        else setDisableSearchIcon(true)
     }
     return (
         <div className='listhead-container' style={addNew ? { justifyContent: 'flex-start', padding: '5px' } : { justifyContent: 'space-between', padding: '5px' }}>
             {
-                boGhiSo
+                ghiSo
                     ?
                     <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
                         <div className="button-together" style={{ display: 'flex', gap: '10px' }}>
-                            <Button onClick={editHanlde} style={{ backgroundColor: '#c43e1b' }}><EditOutlined />Sửa</Button>
-                            <Button onClick={handleGhiSo} style={{ backgroundColor: '#c43e1b' }}><CheckCircleOutlined />Ghi sổ</Button>
-                            <Button onClick={handleHuyCT}><CloseOutlined />Huỷ chứng từ</Button>
+                            <Button style={{ backgroundColor: '#c43e1b' }} onClick={() => handleBoGhiso(formValues.sochungtu)}><SaveOutlined />Bỏ ghi sổ</Button>
+                            <Button disabled={true}><CloseOutlined />Xuất kho</Button>
                         </div>
                         <div className="right-listhead">
                             <ul style={{ display: 'flex', gap: '5px', listStyle: 'none' }}>
-                                <li style={{ background: '#8c0c0c', padding: '5px 15px' }}>Chưa ghi sổ</li>
-                                <li style={{ background: '#8c0c0c', padding: '5px 15px' }}>Ghi sổ</li>
-                                <li style={{ background: '#8c0c0c', padding: '5px 15px' }}>Huỷ chứng từ</li>
+                                <li className='chua-ghi-so' style={{  padding: '5px 15px' }}>Chưa ghi sổ</li>
+                                <li className='ghi-so' style={{  padding: '5px 15px' }}>Ghi sổ</li>
+                                <li className='huy-chung-tu' style={{  padding: '5px 15px' }}>Huỷ chứng từ</li>
                             </ul>
                         </div>
                     </div>
                     :
-                    KHCT
-                        ? <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                    boGhiSo
+                        ?
+                        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
                             <div className="button-together" style={{ display: 'flex', gap: '10px' }}>
                                 <Button onClick={editHanlde} style={{ backgroundColor: '#c43e1b' }}><EditOutlined />Sửa</Button>
                                 <Button onClick={handleGhiSo} style={{ backgroundColor: '#c43e1b' }}><CheckCircleOutlined />Ghi sổ</Button>
@@ -212,88 +243,104 @@ const ListHead = ({ formValues, arrNewLine, setSave, setKichHoatChungTu }) => {
                             </div>
                             <div className="right-listhead">
                                 <ul style={{ display: 'flex', gap: '5px', listStyle: 'none' }}>
-                                    <li style={{ background: '#8c0c0c', padding: '5px 15px' }}>Chưa ghi sổ</li>
-                                    <li style={{ background: '#8c0c0c', padding: '5px 15px' }}>Ghi sổ</li>
-                                    <li style={{ background: '#8c0c0c', padding: '5px 15px' }}>Huỷ chứng từ</li>
+                                    <li className='chua-ghi-so' style={{  padding: '5px 15px' }}>Chưa ghi sổ</li>
+                                    <li className='ghi-so' style={{  padding: '5px 15px' }}>Ghi sổ</li>
+                                    <li className='huy-chung-tu' style={{  padding: '5px 15px' }}>Huỷ chứng từ</li>
                                 </ul>
                             </div>
                         </div>
                         :
-                        isEdit
-                            ? checkDataEditToRenderButton(idUpdate)
-                            // :
-                            // isEdit && !isCreate && isSave
-                            //     ?
-                            //     <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                            //         <div className="button-together" style={{ display: 'flex', gap: '10px' }}>
-                            //             <Button htmlType="submit" onClick={handleSave} style={{ backgroundColor: '#c43e1b' }}><SaveOutlined />Lưu</Button>
-                            //             <Button><CloseOutlined />Huỷ</Button>
-                            //         </div>
-                            //         <div className="right-listhead">
-                            //             <ul style={{ display: 'flex', gap: '5px', listStyle: 'none' }}>
-                            //                 <li style={{ background: '#8c0c0c', padding: '5px 15px' }}>Chưa ghi sổ</li>
-                            //                 <li style={{ background: '#8c0c0c', padding: '5px 15px' }}>Ghi sổ</li>
-                            //                 <li style={{ background: '#8c0c0c', padding: '5px 15px' }}>Huỷ chứng từ</li>
-                            //             </ul>
-                            //         </div>
-                            //     </div>
-                            :
-                            isCreate && !isEdit
-                                ? <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                                    <div className="button-together" style={{ display: 'flex', gap: '10px' }}>
-                                        <Button onClick={editHanlde} style={{ backgroundColor: '#c43e1b' }}><EditOutlined />Sửa</Button>
-                                        <Button onClick={handleGhiSo} style={{ backgroundColor: '#c43e1b' }}><CheckCircleOutlined />Ghi sổ</Button>
-                                        <Button onClick={handleHuyCT}><CloseOutlined />Huỷ chứng từ</Button>
-                                    </div>
-                                    <div className="right-listhead">
-                                        <ul style={{ display: 'flex', gap: '5px', listStyle: 'none' }}>
-                                            <li style={{ background: '#8c0c0c', padding: '5px 15px' }}>Chưa ghi sổ</li>
-                                            <li style={{ background: '#8c0c0c', padding: '5px 15px' }}>Ghi sổ</li>
-                                            <li style={{ background: '#8c0c0c', padding: '5px 15px' }}>Huỷ chứng từ</li>
-                                        </ul>
-                                    </div>
+                        KHCT
+                            ? <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                                <div className="button-together" style={{ display: 'flex', gap: '10px' }}>
+                                    <Button onClick={editHanlde} style={{ backgroundColor: '#c43e1b' }}><EditOutlined />Sửa</Button>
+                                    <Button onClick={handleGhiSo} style={{ backgroundColor: '#c43e1b' }}><CheckCircleOutlined />Ghi sổ</Button>
+                                    <Button onClick={handleHuyCT}><CloseOutlined />Huỷ chứng từ</Button>
                                 </div>
+                                <div className="right-listhead">
+                                    <ul style={{ display: 'flex', gap: '5px', listStyle: 'none' }}>
+                                        <li className='chua-ghi-so active' style={{  padding: '5px 15px' }}>Chưa ghi sổ</li>
+                                        <li className='ghi-so' style={{  padding: '5px 15px' }}>Ghi sổ</li>
+                                        <li className='huy-chung-tu' style={{  padding: '5px 15px' }}>Huỷ chứng từ</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            :
+                            isEdit
+                                ? checkDataEditToRenderButton(idUpdate)
+                                // :
+                                // isEdit && !isCreate && isSave
+                                //     ?
+                                //     <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                                //         <div className="button-together" style={{ display: 'flex', gap: '10px' }}>
+                                //             <Button htmlType="submit" onClick={handleSave} style={{ backgroundColor: '#c43e1b' }}><SaveOutlined />Lưu</Button>
+                                //             <Button><CloseOutlined />Huỷ</Button>
+                                //         </div>
+                                //         <div className="right-listhead">
+                                //             <ul style={{ display: 'flex', gap: '5px', listStyle: 'none' }}>
+                                //                 <li style={{  padding: '5px 15px' }}>Chưa ghi sổ</li>
+                                //                 <li style={{  padding: '5px 15px' }}>Ghi sổ</li>
+                                //                 <li style={{  padding: '5px 15px' }}>Huỷ chứng từ</li>
+                                //             </ul>
+                                //         </div>
+                                //     </div>
                                 :
-                                !addNew && !isCreate & !isEdit
-                                    ? <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <div className="button_add">
-                                            <Button type="primary" danger onClick={hanldeAddNew} style={{ borderRadius: '5px' }}>
-                                                + Thêm mới
-                                            </Button>
+                                isCreate && !isEdit
+                                    ? <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                                        <div className="button-together" style={{ display: 'flex', gap: '10px' }}>
+                                            <Button onClick={editHanlde} style={{ backgroundColor: '#c43e1b' }}><EditOutlined />Sửa</Button>
+                                            <Button onClick={handleGhiSo} style={{ backgroundColor: '#c43e1b' }}><CheckCircleOutlined />Ghi sổ</Button>
+                                            <Button onClick={handleHuyCT}><CloseOutlined />Huỷ chứng từ</Button>
                                         </div>
                                         <div className="right-listhead">
-                                            <Form form={form} onFinish={handleFinish} style={{ display: 'flex', gap: '5px', alignItems: 'center', paddingTop: '10px', paddingBottom: '10px' }}>
-                                                <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
-                                                    <Form.Item name={'searchData'}>
-                                                        <Input />
-                                                    </Form.Item>
-                                                    <Form.Item>
-                                                        <FieldSelect arrOptions={arrOptions} onChangeHandle={onChangeHanlde} />
-                                                    </Form.Item>
-                                                </div>
-                                                <div style={{ display: 'flex', gap: '5px' }}>
-                                                    <Button type="button" onClick={resetField}>
-                                                        <ReloadOutlined />
-                                                    </Button>
-                                                    <Button type="primary" htmlType="submit" >
-                                                        <SearchOutlined />
-                                                    </Button>
-                                                </div>
-                                            </Form>
+                                            <ul style={{ display: 'flex', gap: '5px', listStyle: 'none' }}>
+                                                <li className='chua-ghi-so active' style={{  padding: '5px 15px' }}>Chưa ghi sổ</li>
+                                                <li className='ghi-so' style={{  padding: '5px 15px' }}>Ghi sổ</li>
+                                                <li className='huy-chung-tu' style={{  padding: '5px 15px' }}>Huỷ chứng từ</li>
+                                            </ul>
                                         </div>
                                     </div>
-                                    : <div style={{ display: 'flex', gap: '10px' }}>
-                                        <div className="button_add">
-                                            <Button type="primary" htmlType="submit" style={{ backgroundColor: '#c43e1b' }}>
-                                                <PlusCircleOutlined /> Tạo
-                                            </Button>
+                                    :
+                                    !addNew && !isCreate & !isEdit
+                                        ? <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <div className="button_add">
+                                                <Button type="primary" danger onClick={hanldeAddNew} style={{ borderRadius: '5px' }}>
+                                                    + Thêm mới
+                                                </Button>
+                                            </div>
+                                            <div className="right-listhead">
+                                                <Form form={form} onFinish={handleFinish} style={{ display: 'flex', gap: '5px', alignItems: 'center', paddingTop: '10px', paddingBottom: '10px' }}>
+                                                    <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
+                                                        <Form.Item name={'searchData'}>
+                                                            <Input onChange={(e) => handleSearch(e)} />
+                                                        </Form.Item>
+                                                        <Form.Item>
+                                                            <FieldSelect arrOptions={arrOptions} onChangeHandle={onChangeHanlde} />
+                                                        </Form.Item>
+                                                    </div>
+                                                    <div style={{ display: 'flex', gap: '5px' }}>
+                                                        <Button disabled={disableSearchIcon ? true : false} type="button" onClick={resetField}>
+                                                            <ReloadOutlined />
+                                                        </Button>
+                                                        <Button disabled={disableSearchIcon ? true : false} type="primary" htmlType="submit" style={{ backgroundColor: '#c43e1b', borderColor: '#c43e1b' }}>
+                                                            <SearchOutlined />
+                                                        </Button>
+                                                    </div>
+                                                </Form>
+                                            </div>
                                         </div>
-                                        <div className="button_huytao" >
-                                            <Button onClick={handleHuyTao}>
-                                                <CloseOutlined />Huỷ Tạo
-                                            </Button>
+                                        : <div style={{ display: 'flex', gap: '10px' }}>
+                                            <div className="button_add">
+                                                <Button type="primary" htmlType="submit" style={{ backgroundColor: '#c43e1b' }}>
+                                                    <PlusCircleOutlined /> Tạo
+                                                </Button>
+                                            </div>
+                                            <div className="button_huytao" >
+                                                <Button onClick={handleHuyTao}>
+                                                    <CloseOutlined />Huỷ Tạo
+                                                </Button>
+                                            </div>
                                         </div>
-                                    </div>
             }
         </div>
     )

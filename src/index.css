@@ -13,3 +13,14 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.ant-table-cell{
+  border-right: 1px solid #f0f0f0;
+}
+.active{
+  background: #8c0c0c!important;
+  color: #fff;
+}
+.right-listhead{
+  color: #000;
+}

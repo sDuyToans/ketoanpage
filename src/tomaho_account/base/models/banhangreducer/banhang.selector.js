@@ -79,3 +79,8 @@ export const selectError = createSelector(
     [selectBanHangReducer],
     slice => slice.error
 )
+
+export const selectIsActiveNewTrangThai = createSelector(
+    [selectBanHangReducer],
+    slice => slice.isActiveNewTrangThai
+)
